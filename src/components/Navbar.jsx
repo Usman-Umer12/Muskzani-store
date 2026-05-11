@@ -3,9 +3,11 @@ import {
   ShoppingBag,
   Menu,
   X,
+  User,
+  LogOut,
 } from "lucide-react";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../CartContext";
 import logo from "../assets/logo.png";
 
@@ -22,14 +24,43 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
+
   const { totalItems } = useCart();
 
   const [active, setActive] = useState(location.pathname || "/");
+
+  // LOGIN STATE
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setActive(location.pathname || "/");
   }, [location.pathname]);
 
+  // CHECK LOGIN
+  useEffect(() => {
+    const token =
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("isLoggedIn");
+
+    setIsLoggedIn(!!token);
+
+    const syncAuth = () => {
+      const token =
+        localStorage.getItem("authToken") ||
+        localStorage.getItem("isLoggedIn");
+
+      setIsLoggedIn(!!token);
+    };
+
+    window.addEventListener("authChanged", syncAuth);
+
+    return () => {
+      window.removeEventListener("authChanged", syncAuth);
+    };
+  }, []);
+
+  // SCROLL EFFECT
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 30);
@@ -40,9 +71,28 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // NAV CLICK
   const handleNavClick = (href) => {
     setActive(href);
     setOpen(false);
+  };
+
+  // LOGOUT
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("isLoggedIn");
+
+    setIsLoggedIn(false);
+
+    window.dispatchEvent(
+      new CustomEvent("authChanged", {
+        detail: { loggedIn: false },
+      })
+    );
+
+    setOpen(false);
+
+    navigate("/login");
   };
 
   return (
@@ -131,6 +181,31 @@ const Navbar = () => {
           {/* RIGHT SIDE */}
           <div className="relative z-10 flex items-center gap-3">
 
+            {/* DESKTOP LOGIN */}
+            <div className="hidden lg:flex">
+
+              {!isLoggedIn ? (
+                <Link
+                  to="/login"
+                  className="relative w-11 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition-all duration-300"
+                >
+
+                  <User className="w-5 h-5 text-white" />
+
+                </Link>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="relative w-11 h-11 rounded-full border border-red-500/30 bg-red-600/10 backdrop-blur-md flex items-center justify-center hover:bg-red-600/20 transition-all duration-300"
+                >
+
+                  <LogOut className="w-5 h-5 text-red-400" />
+
+                </button>
+              )}
+
+            </div>
+
             {/* CART */}
             <Link
               to="/cart"
@@ -172,28 +247,63 @@ const Navbar = () => {
           }`}
         >
 
-          <div className="bg-black/95 backdrop-blur-2xl border-t border-white/10 px-6 py-6 space-y-5">
+          <div className="bg-black/95 backdrop-blur-2xl border-t border-white/10 px-6 py-6">
 
-            {navItems.map((item) => {
-              const isActive = active === item.href;
+            {/* NAV ITEMS */}
+            <div className="flex flex-col gap-5">
 
-              return (
+              {navItems.map((item) => {
+                const isActive = active === item.href;
+
+                return (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => handleNavClick(item.href)}
+                    className={`block text-sm uppercase tracking-[0.3em] transition-all duration-300 ${
+                      isActive
+                        ? "text-red-400"
+                        : "text-zinc-300 hover:text-white"
+                    }`}
+                  >
+
+                    {item.name}
+
+                  </Link>
+                );
+              })}
+
+            </div>
+
+            {/* MOBILE ACCOUNT */}
+            <div className="mt-6 pt-6 border-t border-white/10">
+
+              {!isLoggedIn ? (
                 <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => handleNavClick(item.href)}
-                  className={`block text-sm uppercase tracking-[0.3em] transition-all duration-300 ${
-                    isActive
-                      ? "text-red-400"
-                      : "text-zinc-300 hover:text-white"
-                  }`}
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-zinc-300 hover:text-white transition"
                 >
 
-                  {item.name}
+                  <User size={18} />
+
+                  Login
 
                 </Link>
-              );
-            })}
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-red-400 transition"
+                >
+
+                  <LogOut size={18} />
+
+                  Logout
+
+                </button>
+              )}
+
+            </div>
 
           </div>
 
