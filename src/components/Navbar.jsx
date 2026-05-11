@@ -81,11 +81,11 @@ const Navbar = () => {
 
             <div className="leading-tight">
 
-              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold uppercase tracking-[0.28em] bg-gradient-to-r from-white via-zinc-100 to-red-400 bg-clip-text text-transparent">
+              <h1 className="text-lg ml-[-20px] sm:text-xl md:text-2xl font-semibold uppercase tracking-[0.28em] bg-gradient-to-r from-white via-zinc-100 to-red-400 bg-clip-text text-transparent">
                 MushZani
               </h1>
 
-              <p className="text-[10px] tracking-[0.4em] uppercase text-red-400">
+              <p className="text-[10px] ml-[-20px] tracking-[0.4em] uppercase text-red-400">
                 Luxury Perfume
               </p>
 

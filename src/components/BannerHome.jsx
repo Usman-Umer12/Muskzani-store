@@ -151,7 +151,7 @@ const BannerHome = () => {
           {/* HEADING */}
           <h1
             ref={headingRef}
-            className="mt-30 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1] tracking-[0.18em]"
+            className="mt-10 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1] tracking-[0.18em]"
           >
             Pure{" "}
             <span className="text-red-500 font-medium drop-shadow-[0_0_25px_rgba(239,68,68,0.5)]">
