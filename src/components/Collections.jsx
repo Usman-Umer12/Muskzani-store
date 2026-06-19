@@ -1,26 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Sparkles, Phone, ArrowRight, Info } from "lucide-react";
 import { useCart } from "../../CartContext";
 import { useNavigate } from "react-router-dom";
 import collectionVideo from "../assets/collectvideo.mp4";
 
-
 const Collections = () => {
-
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
+  // ✅ ALL PRODUCTS (DATA ONLY)
   const products = Array.from({ length: 104 }, (_, index) => ({
     id: index + 1,
     name: `Luxury CNC Design ${index + 1}`,
     img: `/collection${index + 1}.png`,
   }));
 
+  // ✅ PAGINATION STATE
+  const [visibleCount, setVisibleCount] = useState(12);
+
+  const visibleProducts = products.slice(0, visibleCount);
+
   const handleBookNow = (product) => {
     addToCart(product);
     navigate("/cart");
   };
 
+  // ✅ SCROLL ANIMATION (same as yours but optimized)
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -33,12 +38,11 @@ const Collections = () => {
       { threshold: 0.1 }
     );
 
-    document.querySelectorAll(".reveal").forEach((el) => {
-      observer.observe(el);
-    });
+    const elements = document.querySelectorAll(".reveal");
+    elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, []);
+  }, [visibleProducts]);
 
   return (
     <section className="min-h-screen text-white bg-gradient-to-br from-[#0f0d0b] via-[#1a1410] to-black overflow-hidden">
@@ -55,11 +59,9 @@ const Collections = () => {
           className="absolute inset-0 w-full h-full object-cover scale-110"
         />
 
-        {/* DARK OVERLAY (40%) */}
         <div className="absolute inset-0 bg-black/60" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/90" />
 
-        {/* HERO CONTENT */}
         <div className="relative z-10 h-full mt-15 flex items-center justify-center px-6 text-center">
           <div className="max-w-5xl reveal">
 
@@ -70,22 +72,16 @@ const Collections = () => {
               </span>
             </div>
 
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-[0.12em]"
-              style={{ fontFamily: "serif" }}
-            >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-[0.12em]" style={{ fontFamily: "serif" }}>
               Crafted In
-              <span className="block mt-5 text-[#c89f6a]">
-                Wood & Precision
-              </span>
+              <span className="block mt-5 text-[#c89f6a]">Wood & Precision</span>
             </h1>
 
             <p className="mt-8 text-zinc-300 max-w-3xl mx-auto text-sm sm:text-base md:text-lg leading-relaxed">
               Luxury CNC creations crafted with precision, premium materials,
-              and timeless design — built for modern luxury interiors and architectural spaces.
+              and timeless design — built for modern luxury interiors.
             </p>
 
-            {/* BUTTONS */}
             <div className="flex justify-center gap-5 mt-10 flex-wrap">
 
               <button
@@ -118,55 +114,24 @@ const Collections = () => {
           </div>
         </div>
       </div>
-      {/* ================= STATS BAR ================= */}
-      <div className="absolute bottom-[-10] left-0 w-full z-20">
-        <div className="backdrop-blur-xl bg-black/60 border-t border-white/10">
-          <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 text-center gap-6">
-
-            <div className="reveal">
-              <h3 className="text-xl md:text-2xl font-semibold text-[#c89f6a]">50+</h3>
-              <p className="text-xs md:text-sm text-zinc-300 mt-1">Categories</p>
-            </div>
-
-            <div className="reveal">
-              <h3 className="text-xl md:text-2xl font-semibold text-[#c89f6a]">100%</h3>
-              <p className="text-xs md:text-sm text-zinc-300 mt-1">Hand & CNC Crafted</p>
-            </div>
-
-            <div className="reveal">
-              <h3 className="text-xl md:text-2xl font-semibold text-[#c89f6a]">Global</h3>
-              <p className="text-xs md:text-sm text-zinc-300 mt-1">Custom Orders</p>
-            </div>
-
-            <div className="reveal">
-              <h3 className="text-xl md:text-2xl font-semibold text-[#c89f6a]">Export</h3>
-              <p className="text-xs md:text-sm text-zinc-300 mt-1">Intl. Shipping</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
 
       {/* ================= PRODUCTS ================= */}
       <div id="products" className="max-w-7xl mt-30 mx-auto px-5 md:px-10 py-28">
 
         <div className="text-center mb-20 reveal">
-          <h2
-            className="text-3xl md:text-5xl font-light tracking-[0.18em]"
-            style={{ fontFamily: "serif" }}
-          >
+          <h2 className="text-3xl md:text-5xl font-light tracking-[0.18em]" style={{ fontFamily: "serif" }}>
             OUR <span className="text-[#c89f6a]">PRODUCTS</span>
           </h2>
 
           <p className="mt-5 text-zinc-400 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
-            Explore our complete collection of handcrafted CNC wooden products,
-            designed with precision, luxury, and architectural elegance.
+            Explore handcrafted CNC wooden products with precision and luxury design.
           </p>
         </div>
 
+        {/* GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {products.map((product) => (
+          {visibleProducts.map((product) => (
             <div
               key={product.id}
               className="reveal group bg-white/5 border border-[#c89f6a]/10 rounded-2xl overflow-hidden backdrop-blur-xl hover:scale-[1.04] hover:border-[#c89f6a]/40 transition-all duration-500"
@@ -176,6 +141,7 @@ const Collections = () => {
                   src={product.img}
                   alt={product.name}
                   loading="lazy"
+                  decoding="async"
                   className="w-full h-[340px] object-cover group-hover:scale-110 transition duration-700"
                 />
               </div>
@@ -186,7 +152,7 @@ const Collections = () => {
                 </h3>
 
                 <p className="text-zinc-500 text-xs mt-2">
-                  Premium CNC Interior Design Product
+                  Premium CNC Interior Product
                 </p>
 
                 <button
@@ -200,6 +166,18 @@ const Collections = () => {
           ))}
 
         </div>
+
+        {/* LOAD MORE BUTTON */}
+        {visibleCount < products.length && (
+          <div className="flex justify-center mt-12">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 12)}
+              className="px-10 py-3 bg-[#c89f6a] text-black rounded-full font-medium hover:scale-105 transition"
+            >
+              Load More
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ANIMATION */}
@@ -208,7 +186,6 @@ const Collections = () => {
           opacity: 0;
           transform: translateY(40px);
         }
-
         .reveal.show {
           opacity: 1;
           transform: translateY(0);
@@ -216,8 +193,6 @@ const Collections = () => {
         }
       `}</style>
 
-
-      
     </section>
   );
 };

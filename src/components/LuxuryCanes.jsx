@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Sparkles, Phone, ArrowRight, Info } from "lucide-react";
 import { useCart } from "../../CartContext";
 import { useNavigate } from "react-router-dom";
@@ -8,32 +8,38 @@ const Luxurycanes = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
-  const products = Array.from({ length: 18 }, (_, index) => ({
-    id: index + 1,
-    name: `Luxury Cane Design ${index + 1}`,
-    img: `/cans${index + 1}.png`,
-  }));
+  // ✅ STABLE DATA (avoid re-creation every render)
+  const products = useMemo(
+    () =>
+      Array.from({ length: 18 }, (_, index) => ({
+        id: index + 1,
+        name: `Luxury Cane Design ${index + 1}`,
+        img: `/cans${index + 1}.png`,
+      })),
+    []
+  );
 
   const handleBookNow = (product) => {
     addToCart(product);
     navigate("/cart");
   };
 
+  // ✅ OPTIMIZED INTERSECTION OBSERVER (NO MEMORY LEAK)
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => {
+      (entries, obs) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("show");
+            obs.unobserve(entry.target); // ✅ important fix
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.15 }
     );
 
-    document.querySelectorAll(".reveal").forEach((el) => {
-      observer.observe(el);
-    });
+    const elements = document.querySelectorAll(".reveal");
+    elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
   }, []);
@@ -53,11 +59,9 @@ const Luxurycanes = () => {
           className="absolute inset-0 w-full h-full object-cover scale-110"
         />
 
-        {/* DARK OVERLAY 60% */}
         <div className="absolute inset-0 bg-black/60" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-black/90" />
 
-        {/* HERO CONTENT (COLLECTION STYLE) */}
         <div className="relative z-10 h-full mt-15 flex items-center justify-center px-6 text-center">
           <div className="max-w-5xl reveal">
 
@@ -68,10 +72,7 @@ const Luxurycanes = () => {
               </span>
             </div>
 
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-[0.12em]"
-              style={{ fontFamily: "serif" }}
-            >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-[0.12em]" style={{ fontFamily: "serif" }}>
               Crafted In
               <span className="block mt-5 text-[#c89f6a]">
                 Cane & Precision
@@ -80,7 +81,7 @@ const Luxurycanes = () => {
 
             <p className="mt-8 text-zinc-300 max-w-3xl mx-auto text-sm sm:text-base md:text-lg leading-relaxed">
               Luxury cane designs crafted with precision, premium materials,
-              and timeless elegance for modern interior and architectural spaces.
+              and timeless elegance for modern interiors.
             </p>
 
             {/* BUTTONS */}
@@ -117,8 +118,8 @@ const Luxurycanes = () => {
         </div>
       </div>
 
-      {/* ================= STATS BAR (SAME COLLECTION STYLE) ================= */}
-      <div className="relative z-20 mt-0">
+      {/* ================= STATS ================= */}
+      <div className="relative z-20">
         <div className="backdrop-blur-xl bg-black/60 border-t border-white/10">
           <div className="max-w-6xl mx-auto px-4 py-6 grid grid-cols-2 md:grid-cols-4 text-center gap-6">
 
@@ -141,24 +142,21 @@ const Luxurycanes = () => {
               <h3 className="text-xl md:text-2xl font-semibold text-[#c89f6a]">Export</h3>
               <p className="text-xs md:text-sm text-zinc-300 mt-1">Worldwide</p>
             </div>
+
           </div>
         </div>
       </div>
 
       {/* ================= PRODUCTS ================= */}
-      <div id="products" className="max-w-7xl  mx-auto px-5 md:px-10 py-28">
+      <div id="products" className="max-w-7xl mx-auto px-5 md:px-10 py-28">
 
         <div className="text-center mb-20 reveal">
-          <h2
-            className="text-3xl md:text-5xl font-light tracking-[0.18em]"
-            style={{ fontFamily: "serif" }}
-          >
+          <h2 className="text-3xl md:text-5xl font-light tracking-[0.18em]" style={{ fontFamily: "serif" }}>
             OUR <span className="text-[#c89f6a]">CANES</span>
           </h2>
 
           <p className="mt-5 text-zinc-400 text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
-            Explore our complete collection of handcrafted luxury cane designs,
-            built with precision, elegance, and architectural beauty.
+            Explore handcrafted luxury cane designs built with elegance and precision.
           </p>
         </div>
 
@@ -171,17 +169,16 @@ const Luxurycanes = () => {
               className="reveal group bg-white/5 border border-[#c89f6a]/10 rounded-2xl overflow-hidden backdrop-blur-xl hover:scale-[1.04] hover:border-[#c89f6a]/40 transition-all duration-500"
             >
 
-              {/* IMAGE */}
               <div className="overflow-hidden">
                 <img
                   src={product.img}
                   alt={product.name}
                   loading="lazy"
+                  decoding="async"
                   className="w-full h-[340px] object-cover group-hover:scale-110 transition duration-700"
                 />
               </div>
 
-              {/* CONTENT */}
               <div className="p-6 text-center">
                 <h3 className="text-sm font-medium tracking-wide">
                   {product.name}
@@ -198,19 +195,19 @@ const Luxurycanes = () => {
                   Book Now
                 </button>
               </div>
+
             </div>
           ))}
 
         </div>
       </div>
 
-      {/* ================= ANIMATION ================= */}
+      {/* ================= CSS ================= */}
       <style>{`
         .reveal {
           opacity: 0;
           transform: translateY(40px);
         }
-
         .reveal.show {
           opacity: 1;
           transform: translateY(0);

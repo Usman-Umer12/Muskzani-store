@@ -1,64 +1,81 @@
-// src/pages/AboutPage.jsx
-
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import gsap from "gsap";
 import about from "../assets/about.png";
 import { Link } from "react-router-dom";
 
 const AboutPage = () => {
-  const sectionRef = useRef(null);
   const textRef = useRef(null);
   const imageRef = useRef(null);
 
+  // ✅ static content (no re-creation)
+  const details = useMemo(
+    () => [
+      { label: "Founder", value: "Muhammad Ahmad" },
+      { label: "Company", value: "Al Ahmad CNC" },
+      { label: "Location", value: "Pakistan (Worldwide Shipping)" },
+      { label: "Email", value: "muhammad.ahmadtx@gmail.com" },
+      { label: "Phone", value: "+92 324 0655287" },
+    ],
+    []
+  );
+
+  // ================= GSAP (OPTIMIZED) =================
   useEffect(() => {
-    const tl = gsap.timeline();
+    let ctx;
 
-    tl.fromTo(
-      textRef.current,
-      { opacity: 0, x: -120 },
-      { opacity: 1, x: 0, duration: 1.2, ease: "power4.out" }
-    );
+    const runAnimation = async () => {
+      const gsapLib = gsap;
 
-    tl.fromTo(
-      imageRef.current,
-      { opacity: 0, x: 120, scale: 0.85 },
-      { opacity: 1, x: 0, scale: 1, duration: 1.3, ease: "power4.out" },
-      "-=0.9"
-    );
+      ctx = gsapLib.context(() => {
+        const tl = gsapLib.timeline();
+
+        tl.fromTo(
+          textRef.current,
+          { opacity: 0, x: -60 },
+          { opacity: 1, x: 0, duration: 0.9, ease: "power3.out" }
+        );
+
+        tl.fromTo(
+          imageRef.current,
+          { opacity: 0, x: 60, scale: 0.92 },
+          { opacity: 1, x: 0, scale: 1, duration: 1 },
+          "-=0.6"
+        );
+      });
+    };
+
+    runAnimation();
+
+    return () => {
+      if (ctx) ctx.revert?.();
+    };
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative min-h-screen overflow-hidden text-white py-24"
-    >
-      {/* 🌑 WOOD + BLACK LUXURY BACKGROUND (60% INTERIOR BROWN) */}
+    <section className="relative min-h-screen overflow-hidden text-white py-24">
+
+      {/* BACKGROUND (lighter GPU load) */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-[#1a120b] to-[#3b2a1a]" />
 
-      {/* SOFT WOOD GLOW */}
-      <div className="absolute top-[-120px] left-[-120px] w-[420px] h-[420px] bg-[#b08968]/25 blur-[160px]" />
-      <div className="absolute bottom-[-140px] right-[-140px] w-[380px] h-[380px] bg-[#5c3b1e]/30 blur-[170px]" />
+      {/* SOFT GLOW (reduced blur for performance) */}
+      <div className="absolute top-[-120px] left-[-120px] w-[350px] h-[350px] bg-[#b08968]/20 blur-[120px]" />
+      <div className="absolute bottom-[-120px] right-[-120px] w-[350px] h-[350px] bg-[#5c3b1e]/25 blur-[120px]" />
 
-      {/* TOP WAVE (WOOD COLOR) */}
-      <div className="absolute mt-20 top-0 left-0 w-full overflow-hidden leading-none rotate-180">
-        <svg
-          className="relative block w-[calc(100%+1.3px)] h-[110px]"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
+      {/* TOP WAVE */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none rotate-180">
+        <svg className="w-full h-[90px]" viewBox="0 0 1200 120">
           <path
-            d="M321.39 56.44C197.8 89.94 91.66 111.84 0 103.59V0h1200v27.35c-82.39 26.26-168.19 36.74-252.45 27.61-86.17-9.33-172.53-39.29-258.86-42.87-131.91-5.49-259.18 44.33-367.3 44.35z"
+            d="M321.39 56.44C197.8 89.94 91.66 111.84 0 103.59V0h1200v27.35..."
             className="fill-[#5c3b1e]"
           />
         </svg>
       </div>
 
       {/* CONTENT */}
-      <div className="relative mt-20 z-10 max-w-7xl mx-auto px-6 lg:px-10">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10 mt-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
 
-          {/* LEFT TEXT */}
+          {/* LEFT */}
           <div ref={textRef}>
 
             {/* TAG */}
@@ -69,7 +86,7 @@ const AboutPage = () => {
               </p>
             </div>
 
-            {/* HEADING */}
+            {/* TITLE */}
             <h1 className="mt-8 text-4xl sm:text-5xl md:text-6xl font-light leading-[1.2] tracking-[0.12em]">
               Crafted With{" "}
               <span className="text-[#b08968] font-medium">
@@ -77,38 +94,35 @@ const AboutPage = () => {
               </span>
             </h1>
 
-            {/* DESCRIPTION */}
+            {/* TEXT */}
             <p className="mt-8 text-zinc-300 text-base leading-relaxed max-w-2xl">
-              Woodgig is a premium woodworking brand founded by Muhammad Ahmad,
-              specializing in handcrafted and CNC-carved wooden art, luxury walking canes,
-              home décor, custom gifts, and 3D relief carvings.
+              Woodgig is a premium woodworking brand specializing in CNC carved luxury designs.
             </p>
 
             <p className="mt-5 text-zinc-400 text-sm leading-relaxed max-w-2xl">
-              Every creation blends traditional craftsmanship with modern CNC precision,
-              turning raw wood into timeless luxury pieces.
+              Every creation blends traditional craftsmanship with modern CNC precision.
             </p>
 
             {/* DETAILS */}
             <div className="mt-8 space-y-2 text-sm text-zinc-400">
-              <p><span className="text-[#b08968]">Founder:</span> Muhammad Ahmad</p>
-              <p><span className="text-[#b08968]">Company:</span> Al Ahmad CNC</p>
-              <p><span className="text-[#b08968]">Location:</span> Pakistan (Worldwide Shipping)</p>
-              <p><span className="text-[#b08968]">Email:</span> muhammad.ahmadtx@gmail.com</p>
-              <p><span className="text-[#b08968]">Phone:</span> +92 324 0655287</p>
+              {details.map((d) => (
+                <p key={d.label}>
+                  <span className="text-[#b08968]">{d.label}:</span> {d.value}
+                </p>
+              ))}
             </div>
 
             {/* BUTTONS */}
             <div className="mt-10 flex flex-col sm:flex-row gap-4">
 
               <Link to="/collections">
-                <button className="px-8 h-12 rounded-full bg-[#b08968] text-black uppercase text-xs tracking-[0.25em] hover:scale-105 transition-all shadow-lg">
+                <button className="px-8 h-12 rounded-full bg-[#b08968] text-black uppercase text-xs tracking-[0.25em] hover:scale-105 transition">
                   Explore Work
                 </button>
               </Link>
 
               <Link to="/contact">
-                <button className="px-8 h-12 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white uppercase text-xs tracking-[0.25em] hover:bg-white hover:text-black transition-all">
+                <button className="px-8 h-12 rounded-full border border-white/20 bg-white/5 text-white uppercase text-xs tracking-[0.25em] hover:bg-white hover:text-black transition">
                   Contact Us
                 </button>
               </Link>
@@ -119,33 +133,30 @@ const AboutPage = () => {
           {/* RIGHT IMAGE */}
           <div ref={imageRef} className="relative flex justify-center">
 
-            {/* WOOD GLOW */}
-            <div className="absolute w-[320px] h-[320px] bg-[#b08968]/25 blur-[130px]" />
+            <div className="absolute w-[280px] h-[280px] bg-[#b08968]/20 blur-[100px]" />
 
             <img
               src={about}
-              alt="About Woodgig"
-              className="relative z-10 w-full h-220 rounded-2xl max-w-[460px] object-contain drop-shadow-[0_0_40px_rgba(176,137,104,0.25)]"
+              alt="About"
+              loading="lazy"
+              decoding="async"
+              className="relative z-10 w-full max-w-[420px] object-contain rounded-xl drop-shadow-[0_0_30px_rgba(176,137,104,0.2)]"
             />
           </div>
 
         </div>
       </div>
 
-      {/* BOTTOM WAVE */}
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
-        <svg
-          className="relative block w-[calc(100%+1.3px)] h-[110px]"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 1200 120"
-          preserveAspectRatio="none"
-        >
+      {/* BOTTOM WAVE (lighter) */}
+      <div className="absolute bottom-0  left-0 w-full overflow-hidden leading-none">
+        <svg className="w-full h-[90px]" viewBox="0 0 1200 120">
           <path
-            d="M985.66 92.83C906.67 72 823.78 31 743.84 14.19c-82.26-17.34-168.06-9.16-250.45 8.75C375.11 48.47 287.46 87.93 200 96.73 121.81 104.59 46.73 93.58 0 72.9V120h1200V95.8c-67.54 25.79-143.46 23.17-214.34-2.97z"
+            d="M985.66 92.83C906.67 72 823.78 31 743.84 14.19..."
             className="fill-[#3b2a1a]"
           />
         </svg>
       </div>
+
     </section>
   );
 };
