@@ -8,80 +8,72 @@ export function CartProvider({ children }) {
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Persist cart to localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
-  // Add item 
-  const addItem = (item) => {
+  // ✅ FIXED NAME (addToCart)
+  const addToCart = (item) => {
     setCart((prev) => {
       const existing = prev.find((p) => p.id === item.id);
+
       if (existing) {
         return prev.map((p) =>
           p.id === item.id ? { ...p, qty: p.qty + 1 } : p
         );
       }
+
       return [...prev, { ...item, qty: 1 }];
     });
   };
 
-  // Increase qty
   const increment = (id) => {
     setCart((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, qty: p.qty + 1 } : p))
+      prev.map((p) =>
+        p.id === id ? { ...p, qty: p.qty + 1 } : p
+      )
     );
   };
 
-  // Decrease qty (remove if 0)
   const decrement = (id) => {
     setCart((prev) =>
       prev
-        .map((p) => (p.id === id ? { ...p, qty: p.qty - 1 } : p))
+        .map((p) =>
+          p.id === id ? { ...p, qty: p.qty - 1 } : p
+        )
         .filter((p) => p.qty > 0)
     );
   };
 
-  // Remove item
   const removeItem = (id) => {
     setCart((prev) => prev.filter((p) => p.id !== id));
   };
 
-  // Clear cart
   const clearCart = () => setCart([]);
 
-  // Price parser
   const parsePrice = (price) => {
-    if (typeof price === "number" && isFinite(price)) return price;
-    if (!price) return 0;
-    let s = String(price).trim().replace(/[^0-9.\-]/g, "");
-    const parts = s.split(".");
-    if (parts.length > 2) {
-      const first = parts.shift();
-      s = first + "." + parts.join("");
-    }
-    const n = parseFloat(s);
-    return Number.isFinite(n) ? n : 0;
+    if (typeof price === "number") return price;
+    const n = parseFloat(String(price).replace(/[^0-9.]/g, ""));
+    return isNaN(n) ? 0 : n;
   };
 
-  // Totals
-  const totalItems = cart.reduce((sum, p) => sum + (p.qty || 0), 0);
+  const totalItems = cart.reduce((a, b) => a + b.qty, 0);
   const totalPrice = cart.reduce(
-    (sum, p) => sum + (p.qty || 0) * parsePrice(p.price),
+    (a, b) => a + b.qty * parsePrice(b.price),
     0
   );
 
   return (
     <CartContext.Provider
       value={{
-        addItem,
+        cart,
+        addToCart,
         increment,
         decrement,
         removeItem,
         clearCart,
         totalItems,
         totalPrice,
-        cart,
       }}
     >
       {children}

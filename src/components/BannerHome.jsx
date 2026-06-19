@@ -1,216 +1,178 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "./Navbar";
-import video from "../assets/video.mp4";
 import { Link } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
 import gsap from "gsap";
+import { MessageCircle, ArrowUp } from "lucide-react";
+
+// images
+import home1 from "../assets/home1.png";
+import home2 from "../assets/home2.png";
+import home3 from "../assets/home3.png";
+import home4 from "../assets/home4.png";
+import home5 from "../assets/home5.png";
+
+const images = [home1, home2, home3, home4, home5];
+
+const headings = [
+  { line1: "Where Wood", line2: "Becomes Art" },
+  { line1: "Luxury Wood", line2: "Craft Redefined" },
+  { line1: "Precision CNC", line2: "Masterpieces" },
+  { line1: "Timeless", line2: "Handcrafted" },
+  { line1: "Art in Every", line2: "Detail" },
+];
 
 const BannerHome = () => {
-  const videoRef = useRef(null);
+  const [index, setIndex] = useState(0);
+  const [showTop, setShowTop] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
-  const tagRef = useRef(null);
-  const headingRef = useRef(null);
-  const textRef = useRef(null);
-  const btnRef = useRef(null);
-  const scrollRef = useRef(null);
+  const titleRef = useRef(null);
 
+  // WhatsApp
+  const openWhatsApp = () => {
+    window.open("https://wa.me/923014122192", "_blank");
+  };
+
+  // Scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // IMAGE SLIDER
   useEffect(() => {
-    const reduceMotion =
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
 
-    if (reduceMotion && videoRef.current) {
-      videoRef.current.pause();
-    }
+    return () => clearInterval(interval);
+  }, []);
 
-    // STORE STYLE SMOOTH ANIMATION
-    const tl = gsap.timeline();
+  // HEADING ANIMATION
+  useEffect(() => {
+    gsap.fromTo(
+      titleRef.current,
+      { opacity: 0, y: 40 },
+      { opacity: 1, y: 0, duration: 1 }
+    );
+  }, [index]);
 
-    tl.fromTo(
-      tagRef.current,
-      {
-        opacity: 0,
-        y: -40,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 1,
-        ease: "power3.out",
+  // SCROLL LISTENER
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+      setScrollY(y);
+
+      if (y > 300) {
+        setShowTop(true);
+      } else {
+        setShowTop(false);
       }
-    )
+    };
 
-      .fromTo(
-        headingRef.current,
-        {
-          opacity: 0,
-          y: 80,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1.2,
-          ease: "power4.out",
-        },
-        "-=0.5"
-      )
-
-      .fromTo(
-        textRef.current,
-        {
-          opacity: 0,
-          y: 40,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        "-=0.7"
-      )
-
-      .fromTo(
-        btnRef.current,
-        {
-          opacity: 0,
-          y: 50,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        "-=0.7"
-      )
-
-      .fromTo(
-        scrollRef.current,
-        {
-          opacity: 0,
-          y: 20,
-        },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power3.out",
-        },
-        "-=0.5"
-      );
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <section className="relative w-full h-screen overflow-hidden bg-black text-white">
+    <section className="relative w-full h-screen overflow-hidden text-white">
+
       {/* NAVBAR */}
       <div className="absolute top-0 left-0 w-full z-50">
         <Navbar />
       </div>
 
-      {/* VIDEO */}
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover scale-105"
-        autoPlay
-        muted
-        loop
-        playsInline
-      >
-        <source src={video} type="video/mp4" />
-      </video>
+      {/* BACKGROUND */}
+      <div
+        className="absolute inset-0 bg-cover bg-center scale-105 transition-all duration-1000"
+        style={{ backgroundImage: `url(${images[index]})` }}
+      />
 
-      {/* PREMIUM OVERLAYS */}
-      <div className="absolute inset-0 bg-black/60" />
-
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/95" />
-
-      <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-transparent to-black/20" />
-
-      {/* RED LIGHT */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-red-600/10 blur-[140px]" />
-
-      {/* WHITE LIGHT */}
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 blur-[160px]" />
+      {/* OVERLAY */}
+      <div className="absolute inset-0 bg-black/70" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/70 to-black/95" />
 
       {/* CONTENT */}
-      <div className="relative z-20 flex items-center justify-center h-full px-6">
-        <div className="text-center max-w-5xl">
-          {/* SMALL TAG */}
-          <div
-            ref={tagRef}
-            className="inline-flex items-center gap-3 border border-white/10 bg-white/5 backdrop-blur-md px-5 py-2 rounded-full"
-          >
-            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+      <div className="relative mt-10 z-20 flex items-center h-full px-6">
 
-            <p className="tracking-[0.35em] uppercase text-[10px] sm:text-xs text-zinc-300">
-            </p>
-          </div>
+        <div className="max-w-5xl ml-0 lg:ml-20">
 
-          {/* HEADING */}
-          <h1
-            ref={headingRef}
-            className="mt-30 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-light leading-[1] tracking-[0.18em]"
-          >
-            Pure{" "}
-            <span className="text-red-500 font-medium drop-shadow-[0_0_25px_rgba(239,68,68,0.5)]">
-              Luxury
-            </span>
-            <br />
-            Fragrance
-          </h1>
-
-          {/* DESCRIPTION */}
-          <p
-            ref={textRef}
-            className="mt-8 text-sm sm:text-base md:text-lg text-zinc-300 leading-relaxed max-w-2xl mx-auto"
-          >
-            Crafted with emotion, elegance, and identity. A signature scent
-            designed to leave a lasting impression before you even speak.
+          <p className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[#c89f6a] mb-4">
+            Handcrafted with Pride in Pakistan
           </p>
 
-          {/* BUTTONS */}
-          <div
-            ref={btnRef}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-5"
+          <h1
+            ref={titleRef}
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-light leading-tight tracking-[0.15em]"
           >
-            <Link to="/collections">
-              <button className="group relative overflow-hidden px-10 h-12 rounded-full bg-red-600 text-white text-xs tracking-[0.3em] uppercase transition-all duration-500 hover:scale-105 shadow-[0_0_35px_rgba(239,68,68,0.35)]">
-                <span className="relative z-10">
-                  Explore Collection
-                </span>
+            {headings[index].line1} <br />
+            <span className="text-[#c89f6a] font-medium">
+              {headings[index].line2}
+            </span>
+          </h1>
 
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition duration-500" />
+          <p className="mt-6 text-xs sm:text-sm md:text-base lg:text-lg text-zinc-300 max-w-2xl leading-relaxed">
+            Traditional craftsmanship meets modern creativity. Every piece is
+            handcrafted or CNC-carved with precision and passion.
+          </p>
+
+          <div className="mt-8 flex flex-col sm:flex-row gap-4">
+
+            <Link to="/collections">
+              <button className="px-8 h-12 rounded-full bg-[#c89f6a] text-black text-xs tracking-[0.3em] uppercase hover:scale-105 transition">
+                Explore Product
               </button>
             </Link>
 
             <Link to="/about">
-              <button className="px-10 h-12 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-white text-xs tracking-[0.3em] uppercase hover:bg-white hover:text-black transition-all duration-500">
-                Our Story
+              <button className="px-8 h-12 rounded-full border border-[#c89f6a]/40 text-[#c89f6a] text-xs tracking-[0.3em] uppercase hover:bg-[#c89f6a] hover:text-black transition">
+                About
               </button>
             </Link>
+
           </div>
 
-          {/* SCROLL INDICATOR */}
-          <div
-            ref={scrollRef}
-            className="mt-16 flex flex-col items-center justify-center"
-          >
-            {/* LINE */}
-            <div className="w-[1px] h-12 bg-gradient-to-b from-red-500 to-transparent" />
+          <p className="mt-6 text-[10px] tracking-[0.3em] text-zinc-500 uppercase">
+            Customs Clearance & Tariffs Are On Us
+          </p>
 
-            {/* ARROW */}
-            <div className="mt-2 animate-bounce">
-              <ChevronDown className="w-5 h-5 text-white/70" />
-            </div>
-
-            {/* TEXT */}
-            <p className="text-[10px] tracking-[0.35em] uppercase text-zinc-500 mt-2">
-              Scroll Down
-            </p>
-          </div>
         </div>
       </div>
+
+      {/* DOTS */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-30">
+        {images.map((_, i) => (
+          <div
+            key={i}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              i === index ? "bg-[#c89f6a] scale-125" : "bg-white/30"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* ================= WHATSAPP BUTTON ================= */}
+      <div
+        className="fixed right-6 z-50 transition-all duration-300"
+        style={{
+          bottom: scrollY > 200 ? "5rem" : "1.5rem", // 👈 smooth mt-20 effect
+        }}
+      >
+        <button
+          onClick={openWhatsApp}
+          className="relative flex items-center justify-center w-14 h-14 rounded-full bg-[#25D366] shadow-lg hover:scale-110 transition-all duration-300 group"
+        >
+          <MessageCircle size={26} className="text-white" />
+
+          <span className="absolute w-full h-full rounded-full bg-[#25D366] opacity-40 animate-ping"></span>
+
+          <span className="absolute right-16 bg-black/80 text-white text-xs px-3 py-1 rounded-md opacity-0 group-hover:opacity-100 transition">
+            Chat on WhatsApp
+          </span>
+        </button>
+      </div>
+
+     
+
     </section>
   );
 };

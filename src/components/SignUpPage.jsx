@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { signUpStyles } from "../assets/dummyStyles";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { ArrowLeft, EyeOff, Lock, Mail, User, Eye } from "lucide-react";
+import { EyeOff, Eye, ArrowLeft, User, Mail, Lock } from "lucide-react";
 
 const SignUpPage = () => {
   const [name, setName] = useState("");
@@ -10,176 +9,115 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
-  // To submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // enforce all fields
-    if (!name.trim() || !email.trim() || !password) {
-      toast.error("Please fill in all fields.", {
-        position: "top-right",
-        autoClose: 4000,
-        theme: "light",
-      });
-      return;
+    if (!name || !email || !password) {
+      return toast.error("Please fill all fields");
     }
 
-    // simple email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      toast.error("Please enter a valid email address.", {
-        position: "top-right",
-        autoClose: 4000,
-        theme: "light",
-      });
-      return;
+      return toast.error("Invalid email");
     }
 
-    // require remember me explicitly
-    if (!rememberMe) {
-      toast.error("Please tick 'Remember me' to continue.", {
-        position: "top-right",
-        autoClose: 4000,
-        theme: "light",
-      });
-      return;
-    }
-
-    // === NEW: log all form data ===
-    console.log("Signup form submitted — form data:", {
-      name,
-      email,
-      password, // ⚠️ for dev only, don't log raw passwords in production
-      rememberMe,
-      showPassword,
-      timestamp: new Date().toISOString(),
-    });
-
-    // success
-    toast.success("Signup successful", {
-      position: "top-right",
-      autoClose: 1200,
-      theme: "light",
-    });
+    toast.success("Account created successfully!");
 
     setTimeout(() => {
       navigate("/login");
-    }, 1250);
+    }, 1200);
   };
 
   return (
-    <div
-      className={signUpStyles.pageContainer}
-      style={signUpStyles.pageFontStyle}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-[#0b0f0e] text-white px-4 relative">
+
       <ToastContainer />
+
+      {/* BACK BUTTON */}
       <button
-        onClick={() => navigate("/login")}
-        className={signUpStyles.backButton}
+        onClick={() => navigate(-1)}
+        className="absolute top-6 left-6 flex items-center gap-2 text-white/70 hover:text-white transition"
       >
-        <ArrowLeft className={signUpStyles.backIcon} />
-        <span className={signUpStyles.backText}>Back to Login</span>
+        <ArrowLeft size={20} /> Back
       </button>
 
-      <div className={signUpStyles.formContainer}>
-        <div className={signUpStyles.card}>
-          <div className={signUpStyles.decorativeCircle}></div>
-          <h1 className={signUpStyles.title} style={signUpStyles.pageFontStyle}>
-            Create Account
-          </h1>
-          <p className={signUpStyles.subtitle}>
-            Simple Signup to get you Started - light & Clean
+      {/* CARD */}
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl">
+
+        <h1 className="text-3xl font-semibold mb-6 text-center">
+          Create Account
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* NAME */}
+          <div className="relative">
+            <User className="absolute left-3 top-3 text-white/50" size={18} />
+            <input
+              placeholder="Full Name"
+              className="w-full pl-10 p-3 rounded-lg bg-white/10 outline-none focus:ring-2 ring-[#c8a165]"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-white/50" size={18} />
+            <input
+              placeholder="Email"
+              className="w-full pl-10 p-3 rounded-lg bg-white/10 outline-none focus:ring-2 ring-[#c8a165]"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-white/50" size={18} />
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="w-full pl-10 p-3 rounded-lg bg-white/10 outline-none focus:ring-2 ring-[#c8a165]"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-3 text-white/60"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
+          {/* CHECKBOX */}
+          <label className="flex items-center gap-2 text-sm text-white/70">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            Remember me
+          </label>
+
+          {/* BUTTON */}
+          <button className="w-full py-3 rounded-lg bg-[#c8a165] text-black font-semibold hover:bg-[#b08d55] transition">
+            Sign Up
+          </button>
+
+          <p
+            onClick={() => navigate("/login")}
+            className="text-center text-sm text-white/60 cursor-pointer hover:text-white"
+          >
+            Already have an account? Login
           </p>
 
-          <form onSubmit={handleSubmit} className={signUpStyles.form}>
-            <label className={signUpStyles.label}>Full Name</label>
-            <div className={signUpStyles.inputContainer}>
-              <div className={signUpStyles.inputIconContainer}>
-                <User className={signUpStyles.inputIcon} />
-              </div>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter Full Name"
-                className={signUpStyles.inputField}
-                required
-              />
-            </div>
-
-            <label className={signUpStyles.label}>Email</label>
-            <div className={signUpStyles.inputContainer}>
-              <div className={signUpStyles.inputIconContainer}>
-                <Mail className={signUpStyles.inputIcon} />
-              </div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Your@example.com"
-                className={signUpStyles.inputField}
-                required
-              />
-            </div>
-
-            <div>
-              <label className={signUpStyles.label}>Password</label>
-              <div className={signUpStyles.inputContainer}>
-                <div className={signUpStyles.inputIconContainer}>
-                  <Lock className={signUpStyles.inputIcon} />
-                </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Create a password"
-                  className={signUpStyles.inputField}
-                  required
-                />
-
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className={signUpStyles.passwordToggleButton}
-                >
-                  {showPassword ? (
-                    <EyeOff className={signUpStyles.passwordToggleIcon} />
-                  ) : (
-                    <Eye className={signUpStyles.passwordToggleIcon} />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className={signUpStyles.checkboxContainer}>
-              <label className={signUpStyles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  required
-                  className={signUpStyles.checkboxInput}
-                />
-                <span className={signUpStyles.checkboxText}>Remember me</span>
-              </label>
-            </div>
-
-            <button type="submit" className={signUpStyles.submitButton}>
-              Sign up
-            </button>
-          </form>
-
-          <div className={signUpStyles.bottomContainer}>
-            <span className={signUpStyles.bottomText}>
-              Already have an account?{" "}
-            </span>
-            <a href="/login" className={signUpStyles.loginLink}>
-              Login
-            </a>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   );

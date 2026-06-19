@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  ShoppingBag,
-  Menu,
-  X,
-  User,
-  LogOut,
-} from "lucide-react";
-
+import { ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCart } from "../../CartContext";
 import logo from "../assets/logo.png";
 
 const navItems = [
   { name: "Home", href: "/" },
-  { name: "Perfume", href: "/watches" },
-  { name: "Collections", href: "/collections" },
+  { name: "Canes", href: "/luxurycanes" },
+  { name: "Product", href: "/collections" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
@@ -25,291 +18,173 @@ const Navbar = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
-
   const { totalItems } = useCart();
 
-  const [active, setActive] = useState(location.pathname || "/");
+  const isHome = location.pathname === "/";
 
-  // LOGIN STATE
+  const [active, setActive] = useState(location.pathname || "/");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setActive(location.pathname || "/");
   }, [location.pathname]);
 
-  // CHECK LOGIN
-  useEffect(() => {
-    const token =
-      localStorage.getItem("authToken") ||
-      localStorage.getItem("isLoggedIn");
-
-    setIsLoggedIn(!!token);
-
-    const syncAuth = () => {
-      const token =
-        localStorage.getItem("authToken") ||
-        localStorage.getItem("isLoggedIn");
-
-      setIsLoggedIn(!!token);
-    };
-
-    window.addEventListener("authChanged", syncAuth);
-
-    return () => {
-      window.removeEventListener("authChanged", syncAuth);
-    };
-  }, []);
-
-  // SCROLL EFFECT
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 30);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // NAV CLICK
-  const handleNavClick = (href) => {
-    setActive(href);
-    setOpen(false);
-  };
+  useEffect(() => {
+    const token =
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("isLoggedIn");
 
-  // LOGOUT
+    setIsLoggedIn(!!token);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     localStorage.removeItem("isLoggedIn");
-
     setIsLoggedIn(false);
-
-    window.dispatchEvent(
-      new CustomEvent("authChanged", {
-        detail: { loggedIn: false },
-      })
-    );
-
-    setOpen(false);
-
     navigate("/login");
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 px-4 lg:px-8 pt-4">
+    <header className="fixed top-0 left-0 w-full z-50 px-3 md:px-6 pt-4">
 
-      {/* NAVBAR */}
       <nav
-        className={`max-w-7xl mx-auto transition-all duration-500 rounded-3xl border overflow-hidden ${
-          scrolled
-            ? "bg-black/75 backdrop-blur-2xl border-white/10 shadow-[0_10px_60px_rgba(0,0,0,0.6)]"
-            : "bg-black/40 backdrop-blur-xl border-white/5"
-        }`}
+        className={`
+          max-w-7xl mx-auto
+          flex items-center justify-between
+          h-[78px]
+          px-5 lg:px-8
+          rounded-2xl
+          border
+          transition-all duration-500
+
+          ${
+            isHome && !scrolled
+              ? "bg-transparent border-transparent shadow-none backdrop-blur-0"
+              : "bg-white/[0.06] backdrop-blur-[26px] border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.25)]"
+          }
+        `}
       >
 
-        <div className="relative h-20 flex items-center justify-between px-5 lg:px-10">
+        {/* LOGO */}
+        <Link to="/" className="flex items-center gap-4">
 
-          {/* RED GLOW */}
-          <div className="absolute top-0 left-0 w-52 h-52 bg-red-600/10 blur-[100px]" />
+          <img
+            src={logo}
+            alt="WoodGig"
+           className="h-14 md:h-16 w-auto object-contain rounded-2xl"
+          />
 
-          {/* LOGO */}
-          <Link
-            to="/"
-            onClick={() => handleNavClick("/")}
-            className="relative z-10 flex items-center gap-3"
-          >
+          <div className="hidden sm:block leading-tight">
+            <h1 className="text-white text-lg tracking-[0.25em] font-light">
+              WOODGIG
+            </h1>
+            <p className="text-[#c89f6a] text-[10px] uppercase tracking-[0.35em]">
+              Al-USMAN-CNC
+            </p>
+          </div>
 
-            <div className="relative">
+        </Link>
 
-              <img
-                src={logo}
-                alt="logo"
-                className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-[0_0_20px_rgba(239,68,68,0.35)]"
-              />
+        {/* DESKTOP MENU */}
+        <div className="hidden lg:flex items-center gap-10">
 
-            </div>
+          {navItems.map((item) => {
+            const isActive = active === item.href;
 
-            <div className="leading-tight">
-
-              <h1 className="text-lg ml-[-20px] sm:text-xl md:text-2xl font-semibold uppercase tracking-[0.28em] bg-gradient-to-r from-white via-zinc-100 to-red-400 bg-clip-text text-transparent">
-                MushZani
-              </h1>
-
-              <p className="text-[10px] ml-[-20px] tracking-[0.4em] uppercase text-red-400">
-                Luxury Perfume
-              </p>
-
-            </div>
-
-          </Link>
-
-          {/* DESKTOP MENU */}
-          <div className="hidden lg:flex items-center gap-10 relative z-10">
-
-            {navItems.map((item) => {
-              const isActive = active === item.href;
-
-              return (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={() => handleNavClick(item.href)}
-                  className={`relative text-[12px] uppercase tracking-[0.3em] transition-all duration-300 ${
+            return (
+              <Link
+                key={item.name}
+                to={item.href}
+                className="relative text-[11px] uppercase tracking-[0.3em]"
+              >
+                <span
+                  className={`transition ${
                     isActive
-                      ? "text-white"
-                      : "text-zinc-400 hover:text-white"
+                      ? "text-[#c89f6a]"
+                      : "text-zinc-300 hover:text-white"
                   }`}
                 >
-
                   {item.name}
-
-                  {/* ACTIVE LINE */}
-                  <span
-                    className={`absolute left-0 -bottom-2 h-[2px] rounded-full transition-all duration-500 ${
-                      isActive
-                        ? "w-full bg-gradient-to-r from-red-500 to-white"
-                        : "w-0 bg-white"
-                    }`}
-                  />
-
-                </Link>
-              );
-            })}
-
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="relative z-10 flex items-center gap-3">
-
-            {/* DESKTOP LOGIN */}
-            <div className="hidden lg:flex">
-
-              {!isLoggedIn ? (
-                <Link
-                  to="/login"
-                  className="relative w-11 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition-all duration-300"
-                >
-
-                  <User className="w-5 h-5 text-white" />
-
-                </Link>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  className="relative w-11 h-11 rounded-full border border-red-500/30 bg-red-600/10 backdrop-blur-md flex items-center justify-center hover:bg-red-600/20 transition-all duration-300"
-                >
-
-                  <LogOut className="w-5 h-5 text-red-400" />
-
-                </button>
-              )}
-
-            </div>
-
-            {/* CART */}
-            <Link
-              to="/cart"
-              className="relative w-11 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center hover:bg-white/10 transition-all duration-300"
-            >
-
-              <ShoppingBag className="w-5 h-5 text-white" />
-
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-r from-red-500 to-red-700 text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-red-500/40">
-                  {totalItems}
                 </span>
-              )}
 
-            </Link>
-
-            {/* MOBILE BUTTON */}
-            <button
-              onClick={() => setOpen(!open)}
-              className="lg:hidden w-11 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/10 transition"
-            >
-
-              {open ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-
-            </button>
-
-          </div>
+                <span
+                  className={`
+                    absolute left-0 -bottom-2 h-[1px]
+                    bg-[#c89f6a] transition-all duration-300
+                    ${isActive ? "w-full" : "w-0"}
+                  `}
+                />
+              </Link>
+            );
+          })}
 
         </div>
 
-        {/* MOBILE MENU */}
-        <div
-          className={`lg:hidden transition-all duration-500 overflow-hidden ${
-            open ? "max-h-screen" : "max-h-0"
-          }`}
-        >
+        {/* RIGHT ICONS */}
+        <div className="flex items-center gap-3">
 
-          <div className="bg-black/95 backdrop-blur-2xl border-t border-white/10 px-6 py-6">
+          <Link
+            to="/cart"
+            className="relative w-11 h-11 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-xl flex items-center justify-center hover:border-[#c89f6a]/40 transition"
+          >
+            <ShoppingBag className="w-5 h-5 text-white" />
 
-            {/* NAV ITEMS */}
-            <div className="flex flex-col gap-5">
+            {totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#c89f6a] text-black text-[10px] font-bold rounded-full flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </Link>
 
-              {navItems.map((item) => {
-                const isActive = active === item.href;
-
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => handleNavClick(item.href)}
-                    className={`block text-sm uppercase tracking-[0.3em] transition-all duration-300 ${
-                      isActive
-                        ? "text-red-400"
-                        : "text-zinc-300 hover:text-white"
-                    }`}
-                  >
-
-                    {item.name}
-
-                  </Link>
-                );
-              })}
-
-            </div>
-
-            {/* MOBILE ACCOUNT */}
-            <div className="mt-6 pt-6 border-t border-white/10">
-
-              {!isLoggedIn ? (
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-zinc-300 hover:text-white transition"
-                >
-
-                  <User size={18} />
-
-                  Login
-
-                </Link>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-3 text-sm uppercase tracking-[0.3em] text-red-400 transition"
-                >
-
-                  <LogOut size={18} />
-
-                  Logout
-
-                </button>
-              )}
-
-            </div>
-
-          </div>
+          <button
+            onClick={() => setOpen(!open)}
+            className="lg:hidden w-11 h-11 rounded-full border border-white/10 bg-white/[0.03] flex items-center justify-center"
+          >
+            {open ? (
+              <X className="w-5 h-5 text-white" />
+            ) : (
+              <Menu className="w-5 h-5 text-white" />
+            )}
+          </button>
 
         </div>
-
       </nav>
+
+      {/* MOBILE MENU */}
+      <div
+        className={`
+          lg:hidden overflow-hidden transition-all duration-500
+          ${open ? "max-h-[450px] opacity-100 mt-3" : "max-h-0 opacity-0"}
+        `}
+      >
+        <div className="mx-2 rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-[28px] shadow-2xl p-6">
+
+          <div className="flex flex-col gap-4">
+
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setOpen(false)}
+                className="text-sm uppercase tracking-[0.3em] text-zinc-300 hover:text-[#c89f6a]"
+              >
+                {item.name}
+              </Link>
+            ))}
+
+          </div>
+
+        </div>
+      </div>
 
     </header>
   );

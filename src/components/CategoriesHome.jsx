@@ -1,148 +1,181 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import brands from "../assets/CategoriesHomedata";
 
-gsap.registerPlugin(ScrollTrigger);
+// images
+import home3 from "../assets/kitchen.png";
+import home2 from "../assets/home4.png"
+import desk from "../assets/desk.png";
+import art from "../assets/art.png";
+import art1 from "../assets/art1.png";
+import decorate from "../assets/decote.png";
+import decorate1 from "../assets/islamic.png";
+import office from "../assets/officedesk.png";
+import islamic from "../assets/islamic.png";
+import gift from "../assets/gift.png";
+import colect from "../assets/colect.png";
+import colect1 from "../assets/colect1.png";
+import gift2 from "../assets/gift2.png"
+import colect2 from "../assets/colect2.png"
+
+
+const categories = [
+  {
+    title: "Home & Decor",
+    image: decorate,
+    hoverImage: decorate1,
+    items: [
+      "CNC Wall Panels",
+      "Islamic Calligraphy",
+      "Family Name Signs",
+      "Number Plaques",
+      "Wooden Clocks",
+    ],
+  },
+  {
+    title: "Kitchen & Dining",
+    image: home3,
+    hoverImage: home2,
+    items: [
+      "Serving Trays",
+      "Charcuterie Boards",
+      "Cheese Boards",
+      "Coasters",
+      "Tea Box Organizers",
+    ],
+  },
+  {
+    title: "Office & Desk",
+    image: desk,
+    hoverImage: office,
+    items: [
+      "Card Holders",
+      "Pen Stands",
+      "Desk Organizers",
+      "Laptop Stands",
+      "Phone Docks",
+    ],
+  },
+  {
+    title: "Gifts & Keepsakes",
+    image: gift,
+    hoverImage: gift2,
+    items: [
+      "Wedding Gifts",
+      "Anniversary Plaques",
+      "Baby Boards",
+      "Quran Stands",
+      "Jewelry Boxes",
+    ],
+  },
+  {
+    title: "Collectibles",
+    image: colect,
+    hoverImage: colect1,
+    items: [
+      "Viking Shields",
+      "Medieval Shields",
+      "Dragon Plaques",
+      "Gaming Art",
+      "Treasure Chests",
+    ],
+  },
+  {
+    title: "3D Relief Art",
+    image: art1,
+    hoverImage: colect2,
+    items: [
+      "Mountain Landscapes",
+      "Wildlife Scenes",
+      "Lion Reliefs",
+      "Waterfall Panels",
+      "Portrait Carvings",
+    ],
+  },
+];
 
 const CategoriesHome = () => {
-  const cardsRef = useRef([]);
-
-  const premiumProducts = brands.slice(0, 4);
-
-  useEffect(() => {
-    cardsRef.current.forEach((card, i) => {
-      gsap.fromTo(
-        card,
-        {
-          opacity: 0,
-          x: i % 2 === 0 ? -120 : 120,
-        },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 1.2,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-    });
-  }, []);
-
-  const handleHover = (i, enter) => {
-    gsap.to(cardsRef.current[i], {
-      y: enter ? -18 : 0,
-      scale: enter ? 1.03 : 1,
-      duration: 0.45,
-      ease: "power3.out",
-    });
-  };
-
   return (
-    <section className="relative w-full overflow-hidden bg-black text-white py-28">
+    <section className="relative overflow-hidden py-20 md:py-28 bg-gradient-to-b from-[#0f0f0f] via-[#17120d] to-[#241b14]">
 
-      {/* DARK BACKGROUND */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#070707] to-black" />
+      {/* Glow */}
+      <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-[#c89f6a]/10 blur-[180px]" />
+      <div className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#c89f6a]/10 blur-[180px]" />
 
-      {/* RED GLOW */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-red-700/10 blur-[180px]" />
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-8">
 
-      {/* WHITE GLOW */}
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-white/5 blur-[180px]" />
+        {/* Heading */}
+        <div className="mx-auto mb-16 md:mb-20 max-w-4xl text-center">
 
-      {/* TITLE */}
-      <div className="relative z-10 text-center px-6 mb-20">
+          <p className="uppercase tracking-[0.4em] text-[#c89f6a] text-[11px] md:text-xs">
+            Premium Woodworking Products
+          </p>
 
-        <p className="text-red-500 uppercase tracking-[0.45em] text-[11px]">
-          Exclusive Collection
-        </p>
+          <h2 className="mt-5 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-[0.12em] text-white">
+            Masterpiece
+            <span className="block text-[#c89f6a]">Products</span>
+          </h2>
 
-        <h1 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-light tracking-[0.22em] leading-tight">
-
-          Premium{" "}
-
-          <span className="text-white">
-            Fragrance
-          </span>
-
-        </h1>
-
-        <p className="mt-5 text-zinc-500 text-sm md:text-base tracking-wide max-w-2xl mx-auto">
-          Luxury crafted perfumes designed for elegance,
-          confidence and timeless identity.
-        </p>
-
-      </div>
-
-      {/* GRID */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-10">
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14">
-
-          {premiumProducts.map((item, i) => (
-            <Link
-              key={item.id}
-              to={item.link}
-              ref={(el) => (cardsRef.current[i] = el)}
-              onMouseEnter={() => handleHover(i, true)}
-              onMouseLeave={() => handleHover(i, false)}
-              className="group"
-            >
-
-              {/* CARD */}
-              <div className="relative h-[420px] flex flex-col items-center justify-center">
-
-                {/* IMAGE */}
-                <div className="relative flex items-center justify-center w-full h-[320px]">
-
-                  {/* GLOW */}
-                  <div className="absolute w-52 h-52 rounded-full bg-red-600/10 blur-[90px] opacity-0 group-hover:opacity-100 transition duration-700" />
-
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="relative z-10 w-[85%] h-[85%] object-contain transition-all duration-700 group-hover:scale-110"
-                  />
-
-                </div>
-
-                {/* TEXT */}
-                <div className="mt-2 text-center">
-
-                  <p className="text-[10px] uppercase tracking-[0.45em] text-zinc-600">
-                    Luxury Perfume
-                  </p>
-
-                  <h2 className="mt-3 text-2xl font-light tracking-[0.12em] text-white">
-                    {item.name}
-                  </h2>
-
-                  {/* LINE */}
-                  <div className="mt-4 w-0 group-hover:w-20 h-[1px] bg-gradient-to-r from-red-500 to-white mx-auto transition-all duration-500" />
-
-                  {/* BUTTON */}
-                  <button className="mt-6 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 px-8 h-11 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-white text-[11px] uppercase tracking-[0.35em] hover:bg-white hover:text-black">
-
-                    View Product
-
-                  </button>
-
-                </div>
-
-              </div>
-
-            </Link>
-          ))}
+          <p className="mt-6 text-zinc-400 text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
+            Explore our premium woodworking collection crafted with elegance and precision.
+          </p>
 
         </div>
 
-      </div>
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
 
+          {categories.map((category, index) => (
+            <div
+              key={index}
+              className="group overflow-hidden rounded-[30px] bg-white/[0.03] backdrop-blur-xl border border-[#c89f6a]/15 transition-all duration-500 hover:-translate-y-3 hover:border-[#c89f6a]/40"
+            >
+
+              {/* IMAGE (hover swap smooth) */}
+              <div className="relative h-[260px] sm:h-[300px] overflow-hidden">
+
+                <img
+                  src={category.image}
+                  alt={category.title}
+                  className="h-full w-full object-cover transition-all duration-700 group-hover:opacity-0 group-hover:scale-110 absolute inset-0"
+                />
+
+                <img
+                  src={category.hoverImage}
+                  alt={category.title}
+                  className="h-full w-full object-cover transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-110 absolute inset-0"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
+
+              {/* Content */}
+              <div className="p-6 md:p-8">
+
+                <h3 className="mb-5 text-2xl md:text-3xl font-light tracking-[0.05em] text-[#c89f6a]">
+                  {category.title}
+                </h3>
+
+                <ul className="space-y-3">
+                  {category.items.map((item, i) => (
+                    <li key={i} className="flex items-center text-zinc-300 text-sm">
+                      <span className="mr-3 h-2 w-2 rounded-full bg-[#c89f6a]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/collections">
+                  <button className="mt-8 h-11 px-6 rounded-full border border-[#c89f6a] text-[#c89f6a] text-[11px] uppercase tracking-[0.3em] transition-all duration-300 hover:bg-[#c89f6a] hover:text-black">
+                    Explore Products
+                  </button>
+                </Link>
+
+              </div>
+            </div>
+          ))}
+
+        </div>
+      </div>
     </section>
   );
 };
